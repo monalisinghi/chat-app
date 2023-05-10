@@ -1,25 +1,45 @@
-import logo from './logo.svg';
-import './App.css';
+import React, { useState } from "react";
+import { ChatRoom } from "./components/ChatRoom";
+import { Auth } from "./components/Auth.js";
+import AppWrapper from "./components/AppWrapper";
+import Cookies from "universal-cookie";
+import "./App.css";
+import Lobby from "./components/Lobby";
 
-function App() {
+const cookies = new Cookies();
+
+function ChatApp() {
+  const [isAuth, setIsAuth] = useState(cookies.get("auth-token"));
+  const [isInChat, setIsInChat] = useState(cookies.get("in-chat"));
+  const [roomName, setRoomName] = useState(cookies.get("room"));
+
+  if (!isAuth) {
+    return (
+      <AppWrapper
+        isAuth={isAuth}
+        isInChat={isInChat}
+        setIsAuth={setIsAuth}
+        setIsInChat={setIsInChat}
+      >
+        <Auth setIsAuth={setIsAuth} />
+      </AppWrapper>
+    );
+  }
+
   return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
-    </div>
+    <AppWrapper
+      isAuth={isAuth}
+      isInChat={isInChat}
+      setIsAuth={setIsAuth}
+      setIsInChat={setIsInChat}
+    >
+      {isInChat === false || isInChat === undefined ? (
+        <Lobby setRoom={setRoomName} setIsInChat={setIsInChat} />
+      ) : (
+        <ChatRoom />
+      )}
+    </AppWrapper>
   );
 }
 
-export default App;
+export default ChatApp;
